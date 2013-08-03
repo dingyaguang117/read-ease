@@ -1,0 +1,10 @@
+word 数据结构
+
+1. text         #单词
+2. soundmark    #音标
+3. soundiUrl     #声音文件地址
+4. chText      #中文解释
+5. lang = "en"  #语言
+6. classId = 1  #单词级别
+
+
