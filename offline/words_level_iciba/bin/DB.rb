@@ -3,7 +3,7 @@ require "mysql2"
 HOST = "127.0.0.1"
 USERNAME = "root"
 PASSWORD = ""
-DATABASE_NAME = "test"
+DATABASE_NAME = "read-ease"
 
 
 class DB
@@ -19,7 +19,7 @@ end
 
 
 class TableWord
-    TableName = 'words'
+    TableName = 'word'
 
     def initialize
         @database = DB.new
@@ -40,11 +40,29 @@ class TableWord
     end 
 
     def insert(item)
-        sql = "insert into #{TableName} (text, soundmark, soundiUrl, chText, lang, classId) values (
+        item.each do |k,v|
+            if v.class == "".class
+                item[k] = @database.client.escape(v)
+            end
+        end
+        begin
+            sql = "insert into #{TableName} (text, soundmark, soundiUrl, chText, lang, classId) values (
                 '#{item[:text]}', '#{item[:soundmark]}', '#{item[:soundUrl]}', '#{item[:chText]}', 
                 '#{item[:lang]}', #{item[:classId]})"
-        puts sql
-        @database.client.query(sql)
+            @database.client.query(sql)
+
+        rescue => e
+            puts '======== insert error ========'
+            puts e.error_number
+            puts e
+            puts sql
+            puts '========================='
+            #重复key 忽略
+            if e.error_number != 1062
+                raise
+            end
+        end
+        #puts sql
     end
 
 
@@ -52,7 +70,7 @@ class TableWord
         ret = []
         sql = "select * from #{TableName}"
         @database.client.query(sql).each do |word|
-            puts word["chText"]
+            print word["chText"]
             ret << word
         end
         return ret
