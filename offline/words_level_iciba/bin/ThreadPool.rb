@@ -1,5 +1,6 @@
 require "thread"
 
+
 class ThreadPool      
     attr_accessor :max_size  
 
@@ -9,9 +10,11 @@ class ThreadPool
     end
 
     def process(&block)
+      #puts "qsize: #{@q.size}"
       @q.push(0)
       Thread.new do
         block.call
+        #puts 'poped'
         @q.pop
       end
     end
@@ -20,7 +23,7 @@ end
 def test
   pool = ThreadPool.new 10
 
-  (1..1000).each do |i|
+  (1..10000).each do |i|
     pool.process do
       puts "start #{i}"
       sleep(3)
@@ -29,6 +32,13 @@ def test
     
   end
 
+end
+
+
+def test2
+  #pool = ThreadPool.new 1
+  q = SizedQueue.new(2)
+  q.pop()
 end
 
 

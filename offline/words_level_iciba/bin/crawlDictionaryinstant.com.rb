@@ -6,23 +6,24 @@ require File.dirname(__FILE__) + '/ThreadPool'
 Encoding.default_external = Encoding::UTF_8
 Encoding.default_internal = Encoding::UTF_8
 
-MyHttpUtil = HttpUtil.new(nil, {addr: "127.0.0.1", port: 8087})
-MyTableWord = TableWord.new
-MyThreadPool = ThreadPool.new(10)
 MyTableDictionaryInstantSucPage = TableDictionaryInstantSucPage.new
-
+MyTableWord = TableWord.new
 #logSuc = File.open('suc.log','a+')
 #logFail = File.open('fail.log','a+')
 
 def ExtraPage(pageNum)
     if MyTableDictionaryInstantSucPage.exist(pageNum)
-        puts "skip exist #{pageNum}"
         return []
     end
-
+    #if pageNum < 1000000
+    #    return []
+    #end
+    httpUtil = HttpUtil.new(nil, {addr: "127.0.0.1", port: 8087})
+    #httpUtil = HttpUtil.new
+    puts "start #{pageNum}"
     url = "http://dictionaryinstant.com/dictionary/browse/words?page=#{pageNum}"
     puts url
-    data = MyHttpUtil.get(url)
+    data = httpUtil.get(url)
     if data == nil
         #logFail.puts pageNum
         #raise pageNum
@@ -51,15 +52,23 @@ end
 
 
 def main
+    pool = ThreadPool.new 10
+
     (1..23500).each do |i|
-        #MyThreadPool.process do
+        puts i
+        pool.process do
             puts "start #{i}"
             ret = ExtraPage(i)
+            puts "end#{i}"
+            
+            #puts "tableWord#{i}"
             ret.each do |item|
                 puts item
                 MyTableWord.insert(item)
             end
-        #end
+            #puts "insert#{i}"
+        end
+        #sleep(5)
     end
 end
 
