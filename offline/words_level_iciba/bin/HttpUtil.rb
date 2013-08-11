@@ -13,16 +13,23 @@ class HttpUtil
     def get(url)
         url = URI.parse(url)
         begin
-            data = Net::HTTP.get(url)   
+            if @proxy == nil
+                data = Net::HTTP.get(url)
+            else
+                puts @proxy
+                data = Net::HTTP::Proxy(@proxy[:addr], @proxy[:port]).get(url)
+            end
         rescue Exception => e
             puts "HttpUtil: Error, when get",url
             puts e
+            return nil
         end
+        return data
     end
 end
 
 
 if __FILE__ == $0
-    httpUtil = HttpUtil.new
-    puts httpUtil.get("http://www.baidu.com")
+    httpUtil = HttpUtil.new(nil, proxy = {addr: "127.0.0.1", port: 8087})
+    puts httpUtil.get("http://dictionaryinstant.com/")
 end

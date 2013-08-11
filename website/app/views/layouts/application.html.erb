@@ -1,14 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Website</title>
+  <title>Read-Ease</title>
   <%= stylesheet_link_tag    "application", media: "all", "data-turbolinks-track" => true %>
   <%= javascript_include_tag "application", "data-turbolinks-track" => true %>
   <%= csrf_meta_tags %>
 </head>
 <body>
-
-<%= yield %>
-
+    <div class="container-fluid">
+        <div class="row-fluid">
+            <div class="span2">
+                <%= render "layouts/nav" %>
+            </div>
+            <div class="span10">
+                <%= yield %>
+            <div>
+        </div>
+    </div>
 </body>
 </html>

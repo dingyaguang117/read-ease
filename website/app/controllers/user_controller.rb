@@ -1,10 +1,11 @@
 class UserController < ApplicationController
 
-    layout  nil
+
     def index
+
     end
 
     def login
-
+        render :login, :layout => nil
     end
 end

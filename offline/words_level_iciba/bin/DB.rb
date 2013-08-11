@@ -46,7 +46,7 @@ class TableWord
             end
         end
         begin
-            sql = "insert into #{TableName} (text, soundmark, soundiUrl, chText, lang, classId) values (
+            sql = "insert into #{TableName} (text, soundmark, soundUrl, chText, lang, classId) values (
                 '#{item[:text]}', '#{item[:soundmark]}', '#{item[:soundUrl]}', '#{item[:chText]}', 
                 '#{item[:lang]}', #{item[:classId]})"
             @database.client.query(sql)
