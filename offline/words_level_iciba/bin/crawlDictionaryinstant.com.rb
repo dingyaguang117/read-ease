@@ -9,11 +9,17 @@ Encoding.default_internal = Encoding::UTF_8
 MyHttpUtil = HttpUtil.new(nil, {addr: "127.0.0.1", port: 8087})
 MyTableWord = TableWord.new
 MyThreadPool = ThreadPool.new(10)
+MyTableDictionaryInstantSucPage = TableDictionaryInstantSucPage.new
 
 #logSuc = File.open('suc.log','a+')
 #logFail = File.open('fail.log','a+')
 
 def ExtraPage(pageNum)
+    if MyTableDictionaryInstantSucPage.exist(pageNum)
+        puts "skip exist #{pageNum}"
+        return []
+    end
+
     url = "http://dictionaryinstant.com/dictionary/browse/words?page=#{pageNum}"
     puts url
     data = MyHttpUtil.get(url)
@@ -27,7 +33,7 @@ def ExtraPage(pageNum)
     ret = []
     tree.search('//div[@id="definitions"]/li/a/text()').each do |word|
         item = {}
-        puts word.to_s.strip
+        #puts word.to_s.strip
         item[:text] = word.to_s.strip
         item[:soundmark] = ""
         item[:soundUrl] = ""
@@ -39,19 +45,21 @@ def ExtraPage(pageNum)
     #logSuc.puts pageNum
     #logSuc.close
     puts "===suc #{pageNum}"
+    MyTableDictionaryInstantSucPage.insert(pageNum)
     return ret
 end
 
 
 def main
-    (1094..23500).each do |i|
-        MyThreadPool.process do
+    (1..23500).each do |i|
+        #MyThreadPool.process do
+            puts "start #{i}"
             ret = ExtraPage(i)
             ret.each do |item|
                 puts item
                 MyTableWord.insert(item)
             end
-        end
+        #end
     end
 end
 

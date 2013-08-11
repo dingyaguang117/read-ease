@@ -52,13 +52,12 @@ class TableWord
             @database.client.query(sql)
 
         rescue => e
-            puts '======== insert error ========'
-            puts e.error_number
-            puts e
-            puts sql
-            puts '========================='
+            
             #重复key 忽略
-            if e.error_number != 1062
+            if e.error_number == 1062
+                puts e
+                #puts sql
+            else
                 raise
             end
         end
@@ -76,6 +75,27 @@ class TableWord
         return ret
     end
 end
+
+class TableDictionaryInstantSucPage
+    TableName = 'sucPage'
+
+    def initialize
+        @database = DB.new
+    end
+
+    def insert(num)
+        @database.client.query("insert into #{TableName} (pageNum) values (#{num})")
+    end
+
+    def exist(num)
+        if @database.client.query("select * from #{TableName} where pageNum = #{num}").count > 0
+            return true
+        else
+            return false
+        end
+    end
+end
+
 
 if __FILE__ == $0
     #DB.new #(HOST,USERNAME,PASSWORD,DATABASE_NAME)
